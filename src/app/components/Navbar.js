@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import Modal from "./Modal";
 import Login from "./Login";
+import SignupPage from "./Signup";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,7 +81,7 @@ export default function Navbar() {
 
       {/* Modal with Login */}
       <Modal isOpen={showLogin} onClose={() => setShowLogin(false)}>
-        <Login />
+       <SignupPage/>
       </Modal>
     </>
   );
