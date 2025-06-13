@@ -6,7 +6,7 @@ import Games from "../lotties/game.json";
 import HomeImg from "../lotties/home_img.json";
 import Navbar from './Navbar';
 import Footer from './Footer';
-// import Chatbot from './chatbot';
+import Chatbot from './chatbot';
 
 const coursesData = {
   // Below 18 courses
@@ -317,7 +317,7 @@ export default function Homepage() {
    
 
       {/* Chat with AI Assistant */}
-      {/* <div className="py-20 md:py-32 bg-gradient-to-br from-indigo-50 to-purple-50">
+      <div className="py-20 md:py-32 bg-gradient-to-br from-indigo-50 to-purple-50">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto mb-16">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
@@ -338,7 +338,7 @@ export default function Homepage() {
             <Chatbot />
           </div>
         </div>
-      </div> */}
+      </div>
 
 
     </div>
