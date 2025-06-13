@@ -22,7 +22,7 @@ export default function UserProfilePage() {
     monthlyIncome: '12500',
     currentSavings: '85000'
   });
-
+  //dummy
   // Enhanced mouse tracking for sophisticated interactions
   useEffect(() => {
     const handleMouseMove = (e) => {
