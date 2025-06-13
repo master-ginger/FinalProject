@@ -1,6 +1,6 @@
-export default function draganddrop(){
-    return(
+// export default function draganddrop(){
+//     return(
        
-    <SpotTheScam/>
-    )
-}
+//     <SpotTheScam/>
+//     )
+// }
