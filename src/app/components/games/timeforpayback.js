@@ -1,499 +1,447 @@
 "use client";
+import React, { useState, useEffect } from 'react';
+import { BookOpen, Coins, Home, Users, Trophy, AlertCircle, ChevronRight } from 'lucide-react';
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import {
-  Button,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Box,
-  LinearProgress,
-  CircularProgress,
-  Alert,
-  Snackbar,
-  Avatar,
-  Tooltip,
-  Chip
-} from "@mui/material";
-import { financialQuestions } from "./gameQuestions";
+const SapnoKaSafar = () => {
+  const [gameState, setGameState] = useState('welcome');
+  const [currentYear, setCurrentYear] = useState(1);
+  const [currentEventIndex, setCurrentEventIndex] = useState(0);
+  const [playerName, setPlayerName] = useState('');
+  const [playerStats, setPlayerStats] = useState({
+    money: 50000, // Starting money in INR
+    totalDebt: 0,
+    gpa: 8.0,
+    happiness: 75,
+    collegeChoice: null,
+    expenses: [],
+    income: 0
+  });
 
-const Game = () => {
-  const router = useRouter();
+  const colleges = [
+    {
+      id: 'iit',
+      name: 'IIT Delhi',
+      fees: 200000,
+      prestige: 95,
+      location: 'Delhi',
+      description: 'Premier engineering institute with excellent placement record',
+      avgSalary: 1500000
+    },
+    {
+      id: 'du',
+      name: 'Delhi University',
+      fees: 50000,
+      prestige: 80,
+      location: 'Delhi',
+      description: 'Prestigious central university with diverse courses',
+      avgSalary: 800000
+    },
+    {
+      id: 'local',
+      name: 'Local Government College',
+      fees: 25000,
+      prestige: 60,
+      location: 'Your City',
+      description: 'Affordable education close to home',
+      avgSalary: 400000
+    },
+    {
+      id: 'private',
+      name: 'Amity University',
+      fees: 300000,
+      prestige: 70,
+      location: 'Noida',
+      description: 'Private university with modern facilities',
+      avgSalary: 600000
+    }
+  ];
 
-  const [debt, setDebt] = useState(0);
-  const [focus, setFocus] = useState(100);
-  const [happiness, setHappiness] = useState(100);
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedQuestionSet, setSelectedQuestionSet] = useState("adult"); // Default set
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [feedback, setFeedback] = useState({ message: "", severity: "info" });
-  const [gameHistory, setGameHistory] = useState([]);
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [isGameComplete, setIsGameComplete] = useState(false);
-  const [gameStartTime, setGameStartTime] = useState(null);
-
-  // Fetch user data and set appropriate questions based on age
-//   useEffect(() => {
-//     const loadGame = async () => {
-//       try {
-//         setLoading(true);
-        
-       
-        
-//         const questionSetData = financialQuestions[questionSet] || financialQuestions.adult;
-        
-//         // Shuffle questions to provide variety
-//         const shuffledQuestions = [...questionSetData].sort(() => Math.random() - 0.5);
-//         setQuestions(shuffledQuestions);
-        
-//         // Also fetch previous game history if user is logged in
-//         if (user?.email) {
-//           await fetchGameHistory(user.email);
-//         }
-        
-//         // Record game start time
-//         setGameStartTime(new Date());
-        
-//       } catch (error) {
-//         console.error('Error initializing game:', error);
-//         setError('Failed to initialize game with appropriate questions.');
-//         // Fallback to adult questions
-//         setQuestions(financialQuestions.adult);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     // Only load game when user data is available
-//     if (!userDataLoading) {
-//       loadGame();
-//     }
-//   }, [userData, user, userDataLoading]);
-
-//   // Fetch user's previous game history
-//   const fetchGameHistory = async (email) => {
-//     try {
-//       const response = await fetch(`/api/user/gamehistory?email=${encodeURIComponent(email)}`);
-      
-//       if (response.ok) {
-//         const data = await response.json();
-//         if (data?.gameHistory?.length > 0) {
-//           setGameHistory(data.gameHistory);
-//           showFeedbackMessage("Previous game data loaded", "info");
-//         }
-//       } else {
-//         console.log("No previous game history found or error fetching");
-//       }
-//     } catch (error) {
-//       console.error("Error fetching game history:", error);
-//     }
-//   };
-
-  // Save game result to MongoDB
-  const saveGameResult = async () => {
-    
-    
-    try {
-      const gameResult = {
-        date: new Date().toISOString(),
-        debt,
-        focus,
-        happiness,
-        questionSet: selectedQuestionSet,
-        score: calculateScore(),
-        duration: gameStartTime ? Math.floor((new Date() - gameStartTime) / 1000) : 0, // Duration in seconds
-        questionCount: questions.length,
-        lastAnsweredQuestion: questionIndex
-      };
-        
-      const response = await fetch('/api/user/savegame', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: user.email,
-          gameResult
-        }),
-      });
-      
-      if (response.ok) {
-        showFeedbackMessage("Game progress saved!", "success");
-        return true;
-      } else {
-        showFeedbackMessage("Failed to save game progress", "error");
-        return false;
+  const yearlyEvents = {
+    1: [
+      {
+        id: 'hostel',
+        title: 'Accommodation Decision',
+        description: 'Choose your living arrangement for first year',
+        choices: [
+          { text: 'College Hostel (₹60,000/year)', cost: 60000, happiness: 10 },
+          { text: 'Shared PG (₹40,000/year)', cost: 40000, happiness: 5 },
+          { text: 'Stay at Home (₹0)', cost: 0, happiness: -5 }
+        ]
+      },
+      {
+        id: 'smartphone',
+        title: 'New Smartphone',
+        description: 'Your old phone broke. College friends have latest phones.',
+        choices: [
+          { text: 'iPhone (₹80,000)', cost: 80000, happiness: 15 },
+          { text: 'Samsung Galaxy (₹40,000)', cost: 40000, happiness: 10 },
+          { text: 'Budget Phone (₹15,000)', cost: 15000, happiness: 0 },
+          { text: 'Use borrowed phone', cost: 0, happiness: -10 }
+        ]
       }
-    } catch (error) {
-      console.error("Error saving game result:", error);
-      showFeedbackMessage("Error saving game progress", "error");
-      return false;
-    }
-  };
-
-  const makeChoice = (debtChange, focusChange, happinessChange) => {
-    // Apply changes to game state
-    const newDebt = debt + debtChange;
-    const newFocus = Math.max(0, Math.min(100, focus + focusChange));
-    const newHappiness = Math.max(0, Math.min(100, happiness + happinessChange));
-    
-    setDebt(newDebt);
-    setFocus(newFocus);
-    setHappiness(newHappiness);
-    
-    // Show relevant feedback based on choice impact
-    let feedbackMessage = "Moving to next question...";
-    let severity = "info";
-    
-    if (debtChange > 1000) {
-      feedbackMessage = "Your debt has increased significantly!";
-      severity = "warning";
-    } else if (debtChange < -1000) {
-      feedbackMessage = "Great job reducing your debt!";
-      severity = "success";
-    } else if (focusChange > 10 || happinessChange > 10) {
-      feedbackMessage = "That was a good financial decision!";
-      severity = "success";
-    } else if (focusChange < -10 || happinessChange < -10) {
-      feedbackMessage = "This choice has some negative impacts...";
-      severity = "warning";
-    }
-    
-    showFeedbackMessage(feedbackMessage, severity);
-    
-    // Advance to next question or complete game
-    if (questionIndex < questions.length - 1) {
-      setQuestionIndex(questionIndex + 1);
-    } else {
-      setIsGameComplete(true);
-     saveGameResult();
-      showFeedbackMessage("Game complete! See your results", "success");
-    }
-  };
-
-  const calculateScore = () => {
-    // Higher focus and happiness are good, lower debt is good
-    const debtScore = Math.max(0, 100 - (debt / 100));
-    return Math.floor((debtScore + focus + happiness) / 3);
-  };
-
-  const showFeedbackMessage = (message, severity) => {
-    setFeedback({ message, severity });
-    setShowFeedback(true);
-  };
-
-  const formatRupees = (amount) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
-
-  const handleSeeResults = async () => {
-    // Try to save game result and then proceed to results page
-    await saveGameResult();
-    
-    router.push(
-      `/results?debt=${encodeURIComponent(debt)}&focus=${encodeURIComponent(focus)}&happiness=${encodeURIComponent(happiness)}&score=${encodeURIComponent(calculateScore())}&questionSet=${encodeURIComponent(selectedQuestionSet)}`
-    );
+    ],
+    2: [
+      {
+        id: 'internship',
+        title: 'Summer Internship Opportunity',
+        description: 'You got an internship offer, but it requires some investment',
+        choices: [
+          { text: 'Paid internship in Bangalore (₹20,000 income, ₹15,000 expenses)', cost: -5000, happiness: 20 },
+          { text: 'Unpaid internship locally (₹5,000 expenses)', cost: 5000, happiness: 10 },
+          { text: 'Skip internship, work part-time', cost: -15000, happiness: -5 }
+        ]
+      }
+    ],
+    3: [
+      {
+        id: 'placement',
+        title: 'Placement Preparation',
+        description: 'Final year placements are approaching. Invest in preparation?',
+        choices: [
+          { text: 'Premium coaching (₹50,000)', cost: 50000, happiness: 5, salaryBoost: 200000 },
+          { text: 'Online courses (₹10,000)', cost: 10000, happiness: 0, salaryBoost: 50000 },
+          { text: 'Self-study', cost: 0, happiness: -5, salaryBoost: 0 }
+        ]
+      }
+    ],
+    4: [
+      {
+        id: 'graduation',
+        title: 'Graduation Celebration',
+        description: 'You\'re graduating! How do you want to celebrate?',
+        choices: [
+          { text: 'Grand celebration with friends (₹25,000)', cost: 25000, happiness: 20 },
+          { text: 'Simple family dinner (₹5,000)', cost: 5000, happiness: 10 },
+          { text: 'No celebration, save money', cost: 0, happiness: -5 }
+        ]
+      }
+    ]
   };
 
   const resetGame = () => {
-    setDebt(0);
-    setFocus(100);
-    setHappiness(100);
-    setQuestionIndex(0);
-    setIsGameComplete(false);
-    setGameStartTime(new Date());
-    
-    // Shuffle questions again for variety
-    const shuffledQuestions = [...financialQuestions[selectedQuestionSet]].sort(() => Math.random() - 0.5);
-    setQuestions(shuffledQuestions);
-    
-    showFeedbackMessage("Game reset! Start fresh", "info");
+    setGameState('welcome');
+    setCurrentYear(1);
+    setCurrentEventIndex(0);
+    setPlayerName('');
+    setPlayerStats({
+      money: 50000,
+      totalDebt: 0,
+      gpa: 8.0,
+      happiness: 75,
+      collegeChoice: null,
+      expenses: [],
+      income: 0
+    });
   };
 
-  if (loading || userDataLoading) {
-    return (
-      <Container style={{ textAlign: "center", marginTop: "100px" }}>
-        <CircularProgress />
-        <Typography variant="h6" style={{ marginTop: "20px" }}>
-          Loading your financial journey...
-        </Typography>
-      </Container>
-    );
-  }
+  const WelcomeScreen = () => (
+    <div className="min-h-screen bg-gradient-to-br from-orange-400 via-white to-green-400 flex items-center justify-center p-4">
+      <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center">
+        <div className="text-6xl mb-4">🎓</div>
+        <h1 className="text-4xl font-bold text-orange-600 mb-4">Time for Payback!</h1>
+        {/* <h2 className="text-2xl font-semibold text-gray-700 mb-6">Sapno Ka Safar</h2> */}
+        <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+          Navigate through 4 years of college life in India. Make smart financial decisions, 
+          balance your studies, and achieve your dreams while managing your budget wisely.
+        </p>
+        <div className="flex flex-col gap-4">
+          <input
+            type="text"
+            placeholder="Enter your name"
+            className="px-6 py-3 text-lg border-2 border-orange-300 rounded-lg focus:border-orange-500 focus:outline-none"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+            autoFocus
+          />
+          <button
+            onClick={() => setGameState('college-selection')}
+            disabled={!playerName.trim()}
+            className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Start Your Journey
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
-  if (error) {
-    return (
-      <Container style={{ textAlign: "center", marginTop: "100px" }}>
-        <Typography variant="h6" color="error">
-          {error}
-        </Typography>
-        <Button 
-          variant="contained" 
-          color="primary"
-          onClick={() => window.location.reload()}
-          style={{ marginTop: "20px" }}
-        >
-          Try Again
-        </Button>
-      </Container>
-    );
-  }
+  const CollegeSelection = () => (
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 p-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">Choose Your College</h2>
+          <p className="text-lg text-gray-600">Your family has saved ₹{playerStats.money.toLocaleString('en-IN')} for your education</p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-6">
+          {colleges.map((college) => (
+            <div key={college.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-xl font-bold text-gray-800">{college.name}</h3>
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                    Prestige: {college.prestige}/100
+                  </span>
+                </div>
+                
+                <p className="text-gray-600 mb-4">{college.description}</p>
+                
+                <div className="space-y-2 mb-6">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Annual Fees:</span>
+                    <span className="font-semibold">₹{college.fees.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Location:</span>
+                    <span className="font-semibold">{college.location}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Avg. Starting Salary:</span>
+                    <span className="font-semibold">₹{college.avgSalary.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => {
+                    setPlayerStats(prev => ({
+                      ...prev,
+                      collegeChoice: college,
+                      money: prev.money - college.fees
+                    }));
+                    setGameState('year-events');
+                  }}
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-colors"
+                >
+                  Select This College
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
-  // Calculate progress percentage
-  const progressPercentage = (questionIndex / questions.length) * 100;
+  const GameDashboard = () => (
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="text-center">
+          <Coins className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+          <div className="text-sm text-gray-600">Money</div>
+          <div className="font-bold text-lg">₹{playerStats.money.toLocaleString('en-IN')}</div>
+        </div>
+        <div className="text-center">
+          <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+          <div className="text-sm text-gray-600">Debt</div>
+          <div className="font-bold text-lg">₹{playerStats.totalDebt.toLocaleString('en-IN')}</div>
+        </div>
+        <div className="text-center">
+          <BookOpen className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+          <div className="text-sm text-gray-600">GPA</div>
+          <div className="font-bold text-lg">{playerStats.gpa.toFixed(1)}</div>
+        </div>
+        <div className="text-center">
+          <Users className="w-8 h-8 text-green-500 mx-auto mb-2" />
+          <div className="text-sm text-gray-600">Happiness</div>
+          <div className="font-bold text-lg">{playerStats.happiness}%</div>
+        </div>
+        <div className="text-center">
+          <Trophy className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+          <div className="text-sm text-gray-600">Year</div>
+          <div className="font-bold text-lg">{currentYear}/4</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const handleChoice = (choice) => {
+    const newMoney = playerStats.money - choice.cost;
+    const newDebt = newMoney < 0 ? playerStats.totalDebt + Math.abs(newMoney) : playerStats.totalDebt;
+    const finalMoney = Math.max(0, newMoney);
+
+    setPlayerStats(prev => ({
+      ...prev,
+      money: finalMoney,
+      happiness: Math.max(0, Math.min(100, prev.happiness + (choice.happiness || 0))),
+      totalDebt: newDebt,
+      expenses: [...prev.expenses, { 
+        year: currentYear, 
+        description: yearlyEvents[currentYear][currentEventIndex].title, 
+        amount: choice.cost,
+        salaryBoost: choice.salaryBoost || 0
+      }]
+    }));
+
+    const events = yearlyEvents[currentYear] || [];
+    
+    if (currentEventIndex < events.length - 1) {
+      setCurrentEventIndex(currentEventIndex + 1);
+    } else {
+      // Move to next year or graduation
+      if (currentYear < 4) {
+        setCurrentYear(currentYear + 1);
+        setCurrentEventIndex(0);
+        // Deduct yearly college fees
+        setPlayerStats(prev => ({
+          ...prev,
+          money: Math.max(0, prev.money - prev.collegeChoice.fees),
+          totalDebt: prev.money - prev.collegeChoice.fees < 0 
+            ? prev.totalDebt + (prev.collegeChoice.fees - prev.money) 
+            : prev.totalDebt
+        }));
+      } else {
+        setGameState('graduation');
+      }
+    }
+  };
+
+  const YearEvents = () => {
+    const events = yearlyEvents[currentYear] || [];
+    const currentEvent = events[currentEventIndex];
+
+    if (!currentEvent) {
+      if (currentYear < 4) {
+        setCurrentYear(currentYear + 1);
+        setCurrentEventIndex(0);
+        return <div className="min-h-screen flex items-center justify-center">Loading next year...</div>;
+      } else {
+        setGameState('graduation');
+        return null;
+      }
+    }
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 to-pink-200 p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Year {currentYear} - {playerStats.collegeChoice?.name}</h2>
+            <p className="text-lg text-gray-600">Hello {playerName}! Make your choice wisely.</p>
+          </div>
+
+          <GameDashboard />
+
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">{currentEvent.title}</h3>
+            <p className="text-lg text-gray-600 mb-6">{currentEvent.description}</p>
+
+            <div className="space-y-4">
+              {currentEvent.choices.map((choice, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleChoice(choice)}
+                  className="w-full text-left p-4 border-2 border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors"
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">{choice.text}</span>
+                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </div>
+                  {choice.cost !== 0 && (
+                    <div className="text-sm text-gray-500 mt-1">
+                      {choice.cost > 0 ? `Cost: ₹${choice.cost.toLocaleString('en-IN')}` : `Income: ₹${Math.abs(choice.cost).toLocaleString('en-IN')}`}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const GraduationScreen = () => {
+    const salaryBoosts = playerStats.expenses.reduce((total, expense) => total + (expense.salaryBoost || 0), 0);
+    const finalSalary = playerStats.collegeChoice.avgSalary + salaryBoosts;
+    const monthlyIncome = finalSalary / 12;
+    const debtPayoffTime = playerStats.totalDebt > 0 ? Math.ceil(playerStats.totalDebt / (monthlyIncome * 0.3)) : 0;
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-200 p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="text-8xl mb-4">🎓</div>
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">Congratulations {playerName}!</h2>
+            <p className="text-xl text-gray-600">You have successfully completed your journey at {playerStats.collegeChoice?.name}</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6">Your Final Report Card</h3>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">College:</span>
+                  <span className="font-semibold">{playerStats.collegeChoice?.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Final GPA:</span>
+                  <span className="font-semibold">{playerStats.gpa.toFixed(1)}/10</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Happiness Level:</span>
+                  <span className="font-semibold">{playerStats.happiness}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Money Remaining:</span>
+                  <span className="font-semibold">₹{playerStats.money.toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Total Debt:</span>
+                  <span className="font-semibold text-red-600">₹{playerStats.totalDebt.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Starting Salary:</span>
+                  <span className="font-semibold text-green-600">₹{finalSalary.toLocaleString('en-IN')}/year</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Monthly Income:</span>
+                  <span className="font-semibold">₹{monthlyIncome.toLocaleString('en-IN')}</span>
+                </div>
+                {debtPayoffTime > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Debt Payoff Time:</span>
+                    <span className="font-semibold">{debtPayoffTime} months</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Life Lessons Learned:</h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>• Financial planning is crucial for achieving your dreams</li>
+              <li>• Every decision has consequences - both financial and personal</li>
+              <li>• Balancing studies, happiness, and money management is an art</li>
+              <li>• Investing in yourself (education, skills) pays long-term dividends</li>
+              <li>• Sometimes the cheapest option isn't always the best choice</li>
+            </ul>
+          </div>
+
+          <div className="text-center mt-8">
+            <button
+              onClick={resetGame}
+              className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-red-600 transition-all"
+            >
+              Play Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <Container style={{ textAlign: "center", marginTop: "30px", marginBottom: "50px" }}>
-      <Snackbar 
-        open={showFeedback} 
-        autoHideDuration={4000} 
-        onClose={() => setShowFeedback(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity={feedback.severity} onClose={() => setShowFeedback(false)}>
-          {feedback.message}
-        </Alert>
-      </Snackbar>
-
-      <Typography variant="h3" style={{ padding: "30px", fontWeight: "bold" }}>
-        Financial Decisions Game
-      </Typography>
-
-      {/* Age-based question set indicator */}
-      <Box sx={{ mb: 3 }}>
-        <Chip 
-          label={
-            selectedQuestionSet === "under18" ? "Teen Financial Decisions" : 
-            selectedQuestionSet === "adult" ? "Young Adult Financial Choices" : 
-            "Senior Financial Planning"
-          }
-          color="primary"
-          size="medium"
-          sx={{ fontSize: "1rem", py: 1, px: 2 }}
-        />
-      </Box>
-
-      {userData && (
-        <Card raised sx={{ padding: "20px", borderRadius: "12px", mb: 4, bgcolor: "#f8f9fa" }}>
-          <CardContent>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
-              <Avatar 
-                src={userData.profileImage || ""} 
-                alt={userData.name || "User"} 
-                sx={{ width: 56, height: 56, mr: 2 }} 
-              />
-              <Box textAlign="left">
-                <Typography variant="h6">{userData.name || "User"}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Age Group: <Chip 
-                    size="small" 
-                    label={
-                      selectedQuestionSet === "under18" ? "Teen" : 
-                      selectedQuestionSet === "adult" ? "Young Adult" : "Mature Adult"
-                    } 
-                    color="primary" 
-                  />
-                </Typography>
-              </Box>
-            </Box>
-            
-            {gameHistory.length > 0 && (
-              <Box mt={2}>
-                <Typography variant="body2">
-                  Previous best score: {Math.max(...gameHistory.map(game => game.score || 0))}
-                </Typography>
-                <Typography variant="body2">
-                  Games played: {gameHistory.length}
-                </Typography>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      <Card raised sx={{ padding: "20px", borderRadius: "12px", mb: 4 }}>
-        <CardContent>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Current Status
-          </Typography>
-          
-          {/* Overall game progress */}
-          <Box sx={{ width: '100%', mt: 1, mb: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="body2" color="textSecondary">Game Progress</Typography>
-              <Typography variant="body2" color="textSecondary">
-                {questionIndex + 1} of {questions.length} Questions
-              </Typography>
-            </Box>
-            <LinearProgress 
-              variant="determinate" 
-              value={progressPercentage} 
-              sx={{ height: 8, borderRadius: 4 }}
-            />
-          </Box>
-          
-          <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", gap: 2, mt: 3 }}>
-            <Box sx={{ width: "100%" }}>
-              <Typography variant="h6">Debt</Typography>
-              <Typography variant="h5" color={debt > 10000 ? "error" : "success"} fontWeight="bold">
-                {formatRupees(debt)}
-              </Typography>
-            </Box>
-            
-            <Box sx={{ width: "100%" }}>
-              <Typography variant="h6">Focus</Typography>
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                <Box sx={{ width: "80%" }}>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={focus} 
-                    sx={{ 
-                      height: 12, 
-                      borderRadius: 2,
-                      backgroundColor: "#e0e0e0",
-                      '& .MuiLinearProgress-bar': {
-                        backgroundColor: focus < 30 ? "red" : focus < 70 ? "orange" : "green",
-                      }
-                    }} 
-                  />
-                </Box>
-                <Typography variant="h6" fontWeight="bold">
-                  {focus}%
-                </Typography>
-              </Box>
-            </Box>
-            
-            <Box sx={{ width: "100%" }}>
-              <Typography variant="h6">Happiness</Typography>
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                <Box sx={{ width: "80%" }}>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={happiness} 
-                    sx={{ 
-                      height: 12, 
-                      borderRadius: 2,
-                      backgroundColor: "#e0e0e0",
-                      '& .MuiLinearProgress-bar': {
-                        backgroundColor: happiness < 30 ? "red" : happiness < 70 ? "orange" : "green",
-                      }
-                    }} 
-                  />
-                </Box>
-                <Typography variant="h6" fontWeight="bold">
-                  {happiness}%
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
-            <Typography variant="h6" fontWeight="bold">
-              Question {questionIndex + 1} of {questions.length}
-            </Typography>
-            <Typography variant="h6" fontWeight="bold">
-              Current Score: {calculateScore()}
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
-
-      {questions.length > 0 && questionIndex < questions.length && (
-        <Card raised sx={{ mb: 4, borderRadius: "12px" }} key={questionIndex}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h4" fontWeight="bold" gutterBottom>
-              {questions[questionIndex].title}
-            </Typography>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mt: 2 }}>
-              {questions[questionIndex].options.map((option, optIndex) => (
-                <Button 
-                  key={optIndex}
-                  variant="contained" 
-                  color={optIndex === 0 ? "primary" : "secondary"} 
-                  fullWidth
-                  onClick={() => makeChoice(
-                    option.changes.debt, 
-                    option.changes.focus, 
-                    option.changes.happiness
-                  )} 
-                  sx={{ py: 2, fontSize: "17px" }}
-                >
-                  {option.text} 
-                  <Box sx={{ mt: 1, fontSize: "0.85rem", opacity: 0.9 }}>
-                    ({option.changes.debt > 0 ? `+${formatRupees(option.changes.debt)}` : 
-                      option.changes.debt < 0 ? `-${formatRupees(Math.abs(option.changes.debt))}` : 
-                      `${formatRupees(0)}`}
-                    {option.changes.focus !== 0 ? `, Focus ${option.changes.focus > 0 ? '+' : ''}${option.changes.focus}` : ''}
-                    {option.changes.happiness !== 0 ? `, Happiness ${option.changes.happiness > 0 ? '+' : ''}${option.changes.happiness}` : ''})
-                  </Box>
-                </Button>
-              ))}
-            </Box>
-          </CardContent>
-        </Card>
-      )}
-
-      {isGameComplete && (
-        <Card raised sx={{ mb: 4, borderRadius: "12px", bgcolor: "#e8f5e9" }}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h4" fontWeight="bold" gutterBottom color="success.main">
-              Game Complete!
-            </Typography>
-            <Typography variant="h5" gutterBottom>
-              Your Final Score: {calculateScore()}
-            </Typography>
-            <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
-              <Button
-                variant="contained"
-                color="success"
-                size="large"
-                onClick={handleSeeResults}
-                sx={{ py: 2, px: 4 }}
-              >
-                See Full Results
-              </Button>
-              <Button
-                variant="outlined"
-                color="primary"
-                size="large"
-                onClick={resetGame}
-                sx={{ py: 2, px: 4 }}
-              >
-                Play Again
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-      )}
-
-      <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
-        <Button
-          variant="contained"
-          color="info"
-          onClick={resetGame}
-          sx={{ py: 1.5, px: 3 }}
-        >
-          Reset Game
-        </Button>
-        <Button
-          variant="contained"
-          color="warning"
-          onClick={() => router.push('/gamehome')}
-          sx={{ py: 1.5, px: 3 }}
-        >
-          Exit Game
-        </Button>
-      </Box>
-    </Container>
+    <div className="font-sans">
+      {gameState === 'welcome' && <WelcomeScreen />}
+      {gameState === 'college-selection' && <CollegeSelection />}
+      {gameState === 'year-events' && <YearEvents />}
+      {gameState === 'graduation' && <GraduationScreen />}
+    </div>
   );
 };
 
-export default Game;
+export default SapnoKaSafar;

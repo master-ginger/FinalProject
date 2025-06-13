@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext"; // use context
 
 export default function LoginPage() {
+  const { login } = useAuth(); // get login function from context
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -11,23 +13,20 @@ export default function LoginPage() {
 
     const res = await fetch("/api/auth/login", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
 
     if (res.ok) {
+      login(data.user); // store user data in context + localStorage
       alert("Login successful");
-      console.log("Logged in user:", data.user);
-      // Optional: redirect to dashboard
     } else {
       alert(data.error || "Login failed");
     }
   };
-
+  
   return (
     <form onSubmit={handleLogin}>
       <div className="space-y-6 max-w-md mx-auto">

@@ -8,7 +8,18 @@ export async function POST(req) {
   try {
     await dbConnect();
 
-    const { name, email, password } = await req.json();
+    const { email,
+      firstName,
+      lastName,
+      age,
+      phone,
+      location,
+      description,
+      currentSavings,
+      monthlyIncome,
+      financialGoals,
+      experienceLevel,
+      password } = await req.json();
     const userExists = await User.findOne({ email: email.toLowerCase() });    
     if (userExists) {
       return NextResponse.json({ error: "User already exists" }, { status: 400 });
@@ -17,9 +28,19 @@ export async function POST(req) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      name,
       email,
+      firstName,
+      lastName,
+      age,
+      phone,
+      location,
+      description,
+      currentSavings,
+      monthlyIncome,
+      financialGoals,
+      experienceLevel,
       password: hashedPassword,
+
     });
 
     return NextResponse.json({ success: true, user }, { status: 201 });

@@ -1,26 +1,28 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { Camera, Save, Edit3, User, Calendar, FileText, Mail, Phone, MapPin, DollarSign, Target, BookOpen, TrendingUp, Award, Shield } from 'lucide-react';
-
+import { useAuth } from '@/context/AuthContext';
 export default function UserProfilePage() {
+  const { user, logout } = useAuth();
+  console.log("user details: ",user)
   const [isEditing, setIsEditing] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   
   const [profileData, setProfileData] = useState({
-    firstName: 'Alexander',
-    lastName: 'Morgan',
-    email: 'alexander.morgan@email.com',
-    phone: '+1 (555) 123-4567',
-    age: 32,
-    location: 'New York, NY',
-    description: 'Experienced financial professional passionate about wealth building and strategic investment planning. Currently focused on portfolio optimization and long-term financial security.',
+    firstName: `${user?.firstName}`,
+    lastName:`${user?.lastName}`,
+    email: `${user?.email}`,
+    phone: `${user?.phone}`,
+    age: `${user?.age}`,
+    location: `${user?.location}`,
+    description: `${user?.description}`,
     profileImage: null,
-    financialGoals: 'Achieve financial independence through diversified investments, real estate portfolio expansion, and comprehensive retirement planning.',
-    experienceLevel: 'advanced',
-    monthlyIncome: '12500',
-    currentSavings: '85000'
+    financialGoals: `${user?.financialGoals}`,
+    experienceLevel: `${user?.experienceLevel}`,
+    monthlyIncome: `${user?.monthlyIncome}`,
+    currentSavings: `${user?.currentSavings}`
   });
   //dummy
   // Enhanced mouse tracking for sophisticated interactions
@@ -50,6 +52,7 @@ export default function UserProfilePage() {
       ...prev,
       [field]: value
     }));
+    console.log("Profile data: ",profileData)
   };
 
   const handleImageUpload = (event) => {
@@ -66,10 +69,37 @@ export default function UserProfilePage() {
     }
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    console.log('Profile saved:', profileData);
-  };
+ const handleSave = async () => {
+  setIsEditing(false);
+  try {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    const res = await fetch("/api/user/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: storedUser.id,
+        updatedData: profileData,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Profile updated successfully");
+      console.log("Updated user:", data.user);
+    } else {
+      alert(data.error || "Update failed");
+    }
+  } catch (err) {
+    console.error("Error saving profile:", err);
+    alert("Something went wrong while saving the profile");
+  }
+};
+
+
 
   // Parallax effect for header
   const parallaxOffset = scrollY * 0.5;
@@ -95,15 +125,10 @@ export default function UserProfilePage() {
       </div>
 
       {/* Elegant top navigation bar with backdrop blur */}
-      <div className={`bg-white/90 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50 transition-all duration-500 ${scrollY > 50 ? 'shadow-lg' : ''}`}>
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 group">
-              {/* <div className="w-8 h-8 bg-gradient-to-r from-slate-600 to-slate-800 rounded-lg flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
-                <TrendingUp size={16} className="text-white" />
-              </div> */}
-              {/* <span className="text-xl font-semibold text-slate-800">FinanceHub</span> */}
-            </div>
+      <div className={` border-b border-slate-200/50 sticky top-0 z-50 transition-all duration-500 ${scrollY > 50 ? 'shadow-lg' : ''}`}>
+        <div className="max-w-xl mx-auto px-6 py-4">
+          
+            
             <button
               onClick={() => setIsEditing(!isEditing)}
               className="group flex items-center space-x-2 px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
@@ -111,7 +136,7 @@ export default function UserProfilePage() {
               <Edit3 size={16} className="group-hover:rotate-12 transition-transform duration-300" />
               <span>{isEditing ? 'Cancel' : 'Edit Profile'}</span>
             </button>
-          </div>
+         
         </div>
       </div>
 

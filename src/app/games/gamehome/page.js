@@ -1,5 +1,4 @@
-// import Gamehome from "../../components/Gamehome";
-
-// export default function GamehomePage() {
-//   return <Gamehome />;
-// }
+import SapnoKaSafar from "@/app/components/games/timeforpayback";
+export default function GamehomePage() {
+  return <SapnoKaSafar/>;
+}
