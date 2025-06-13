@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   PiggyBank,
   ShieldCheck,
@@ -95,12 +94,13 @@ export default function FinancialIndependenceModule2() {
                 </div>
               </div>
 
-              <Card className="w-full md:w-[42%] bg-white/70 backdrop-blur-md border-l-[8px] border-amber-500 shadow-xl rounded-xl px-6 py-5">
-                <CardContent>
-                  <h2 className="text-xl font-bold text-gray-800 mb-2">{step.title}</h2>
-                  <p className="text-gray-600">{step.description}</p>
-                </CardContent>
-              </Card>
+             <div className="w-full md:w-[42%] bg-white/70 backdrop-blur-md border-l-[8px] border-amber-500 shadow-xl rounded-xl px-6 py-5">
+  <div>
+    <h2 className="text-xl font-bold text-gray-800 mb-2">{step.title}</h2>
+    <p className="text-gray-600">{step.description}</p>
+  </div>
+</div>
+
             </motion.div>
           ))}
         </div>

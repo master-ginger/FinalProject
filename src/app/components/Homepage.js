@@ -110,7 +110,6 @@ export default function Homepage() {
 
   return (
     <div className="overflow-hidden font-sans">
-      <Navbar/>
     
         <div className="container mx-auto px-6 py-20 md:py-32">
         <div className="flex flex-col md:flex-row items-center justify-center  ml-40">
@@ -341,7 +340,6 @@ export default function Homepage() {
         </div>
       </div> */}
 
-      <Footer/>
 
     </div>
   );

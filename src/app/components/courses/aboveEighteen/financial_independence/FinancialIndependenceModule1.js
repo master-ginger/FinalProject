@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   DollarSign,
   Home,
@@ -71,24 +70,25 @@ export default function FinancialIndependenceModule1() {
   
     {/* Information boxes at the bottom */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6 md:px-20 mt-10 pt-2">
-    {incomeSources.map((source, index) => (
-        <motion.div 
-          key={index} 
-          whileHover={{ scale: 1.05 }} 
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <Card className="p-6 shadow-lg bg-white rounded-lg border-l-[8px] border-amber-500">
-            <CardContent className="flex items-center space-x-4">
-              {source.icon}
-              <div>
-                <h2 className="text-xl font-semibold">{source.title}</h2>
-                <p className="text-gray-600">{source.description}</p>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
-    </div>
+  {incomeSources.map((source, index) => (
+    <motion.div 
+      key={index} 
+      whileHover={{ scale: 1.05 }} 
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      <div className="p-6 shadow-lg bg-white rounded-lg border-l-[8px] border-amber-500">
+        <div className="flex items-center space-x-4">
+          {source.icon}
+          <div>
+            <h2 className="text-xl font-semibold">{source.title}</h2>
+            <p className="text-gray-600">{source.description}</p>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  ))}
+</div>
+
   </div>
   
   );

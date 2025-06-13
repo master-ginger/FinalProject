@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
 import { 
   Percent, 
   ChevronDown, 
@@ -14,8 +13,8 @@ import {
   CalendarClock
 } from 'lucide-react';
 import Lottie from "lottie-react";
-import person1Animation from "../../../lotties/person1.json";
-import person2Animation from "../../../lotties/person2.json";
+import person1Animation from "../../../../lotties/person1.json";
+import person2Animation from "../../../../lotties/person2.json";
 
 export default function CreditDebt2() {
   const [openDebt, setOpenDebt] = useState(null);
@@ -293,36 +292,39 @@ export default function CreditDebt2() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {creditCardTips.map((person, index) => (
-                <Card 
-                  key={index} 
-                  className="overflow-hidden bg-blue-50 border-blue-200 hover:shadow-lg transition-all cursor-pointer"
-                  onMouseEnter={() => setHoveredPerson(index)}
-                  onMouseLeave={() => setHoveredPerson(null)}
-                >
-                  <div className="p-4 text-center">
-                    <div className="w-24 h-24 mx-auto bg-blue-600 rounded-full flex items-center justify-center mb-4">
-                      {hoveredPerson === index ? (
-                        <div className="w-full h-full">
-                          <Lottie animationData={person.animation} loop={true} />
-                        </div>
-                      ) : (
-                        <person.icon className="h-12 w-12 text-white" />
-                      )}
-                    </div>
-                    
-                    <h3 className="font-semibold text-lg text-blue-800 mt-10 mb-1">{person.name} says:</h3>
-                    <p className="text-gray-700 font-medium">{person.tip}</p>
-                    
-                    <div className={`mt-4 text-sm text-gray-600 transition-all duration-300 ${
-                      hoveredPerson === index ? "opacity-100 max-h-20" : "opacity-0 max-h-0 overflow-hidden"
-                    }`}>
-                      {person.description}
-                    </div>
-                  </div>
-                </Card>
-              ))}
+  {creditCardTips.map((person, index) => (
+    <div
+      key={index}
+      className="overflow-hidden bg-blue-50 border border-blue-200 hover:shadow-lg transition-all cursor-pointer rounded-xl"
+      onMouseEnter={() => setHoveredPerson(index)}
+      onMouseLeave={() => setHoveredPerson(null)}
+    >
+      <div className="p-4 text-center">
+        <div className="w-24 h-24 mx-auto bg-blue-600 rounded-full flex items-center justify-center mb-4">
+          {hoveredPerson === index ? (
+            <div className="w-full h-full">
+              <Lottie animationData={person.animation} loop={true} />
             </div>
+          ) : (
+            <person.icon className="h-12 w-12 text-white" />
+          )}
+        </div>
+
+        <h3 className="font-semibold text-lg text-blue-800 mt-10 mb-1">{person.name} says:</h3>
+        <p className="text-gray-700 font-medium">{person.tip}</p>
+
+        <div
+          className={`mt-4 text-sm text-gray-600 transition-all duration-300 ${
+            hoveredPerson === index ? "opacity-100 max-h-20" : "opacity-0 max-h-0 overflow-hidden"
+          }`}
+        >
+          {person.description}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
             
             <div className="mt-8 bg-blue-600 rounded-lg p-6 text-white">
               <div className="flex items-center mb-4">

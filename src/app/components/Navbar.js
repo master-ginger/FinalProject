@@ -23,21 +23,30 @@ export default function Navbar() {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex space-x-8">
-              <a href="#modules" className="text-gray-700 hover:text-purple-600 transition font-medium">
-                Modules
-              </a>
-              <a href="#why" className="text-gray-700 hover:text-purple-600 transition font-medium">
+              <Link href="/course" className="text-gray-700 hover:text-purple-600 transition font-medium">
+                Courses
+              </Link>
+              <Link href="/games" className="text-gray-700 hover:text-purple-600 transition font-medium">
+                Games
+              </Link>
+              <Link href="/whycoincoach" className="text-gray-700 hover:text-purple-600 transition font-medium">
                 Why CoinCoach?
-              </a>
-              <a href="#contact" className="text-gray-700 hover:text-purple-600 transition font-medium">
-                Contact
-              </a>
-              <button
-                onClick={() => setShowLogin(true)}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-full font-medium shadow hover:shadow-lg transition"
-              >
-                Login
-              </button>
+              </Link>
+              
+              <div>
+              {isLoggedIn ? (
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center shadow hover:shadow-lg transition cursor-pointer">
+                  <UserCircle className="text-white w-6 h-6" />
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-full font-medium shadow hover:shadow-lg transition"
+                >
+                  Login
+                </button>
+              )}
+            </div>
             </div>
 
             {/* Mobile Menu Button */}

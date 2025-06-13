@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { 
   TrendingUp, 
   DollarSign, 
@@ -190,63 +189,67 @@ export default function InvestmentBasics() {
               
               <div className="grid md:grid-cols-2 gap-8">
                 {investmentTypes.map((investment, index) => (
-                  <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                    <CardContent className="p-8">
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-2xl font-bold text-gray-900">{investment.type}</h3>
-                        <div className={`px-3 py-1 rounded-full text-sm font-medium ${getRiskColor(investment.risk)}`}>
-                          {investment.risk} Risk
-                        </div>
-                      </div>
-                      
-                      <p className="text-gray-600 mb-4">{investment.description}</p>
-                      
-                      <div className="flex items-center justify-between mb-6">
-                        <div>
-                          <span className="text-sm text-gray-500">Expected Return</span>
-                          <div className="text-2xl font-bold text-green-600">{investment.return}</div>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-sm text-gray-500">Annual Average</span>
-                        </div>
-                      </div>
+                  <div 
+  key={index} 
+  className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group rounded-xl bg-white"
+>
+  <div className="p-8">
+    <div className="flex justify-between items-start mb-4">
+      <h3 className="text-2xl font-bold text-gray-900">{investment.type}</h3>
+      <div className={`px-3 py-1 rounded-full text-sm font-medium ${getRiskColor(investment.risk)}`}>
+        {investment.risk} Risk
+      </div>
+    </div>
+    
+    <p className="text-gray-600 mb-4">{investment.description}</p>
+    
+    <div className="flex items-center justify-between mb-6">
+      <div>
+        <span className="text-sm text-gray-500">Expected Return</span>
+        <div className="text-2xl font-bold text-green-600">{investment.return}</div>
+      </div>
+      <div className="text-right">
+        <span className="text-sm text-gray-500">Annual Average</span>
+      </div>
+    </div>
 
-                      <button 
-                        onClick={() => toggleSection(investment.type)}
-                        className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                      >
-                        <span className="font-medium">View Pros & Cons</span>
-                        {expandedSections[investment.type] ? <ChevronUp /> : <ChevronDown />}
-                      </button>
+    <button 
+      onClick={() => toggleSection(investment.type)}
+      className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+    >
+      <span className="font-medium">View Pros & Cons</span>
+      {expandedSections[investment.type] ? <ChevronUp /> : <ChevronDown />}
+    </button>
 
-                      {expandedSections[investment.type] && (
-                        <div className="mt-4 grid grid-cols-2 gap-4">
-                          <div>
-                            <h5 className="font-semibold text-green-700 mb-2">Pros</h5>
-                            <ul className="space-y-1">
-                              {investment.pros.map((pro, i) => (
-                                <li key={i} className="text-sm text-gray-600 flex items-center">
-                                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                                  {pro}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div>
-                            <h5 className="font-semibold text-red-700 mb-2">Cons</h5>
-                            <ul className="space-y-1">
-                              {investment.cons.map((con, i) => (
-                                <li key={i} className="text-sm text-gray-600 flex items-center">
-                                  <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
-                                  {con}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+    {expandedSections[investment.type] && (
+      <div className="mt-4 grid grid-cols-2 gap-4">
+        <div>
+          <h5 className="font-semibold text-green-700 mb-2">Pros</h5>
+          <ul className="space-y-1">
+            {investment.pros.map((pro, i) => (
+              <li key={i} className="text-sm text-gray-600 flex items-center">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                {pro}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h5 className="font-semibold text-red-700 mb-2">Cons</h5>
+          <ul className="space-y-1">
+            {investment.cons.map((con, i) => (
+              <li key={i} className="text-sm text-gray-600 flex items-center">
+                <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                {con}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
                 ))}
               </div>
             </section>
@@ -327,65 +330,66 @@ export default function InvestmentBasics() {
               </div>
               
               <div className="grid md:grid-cols-3 gap-8">
-                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <CardContent className="p-8">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                      <Calculator className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-4">Dollar Cost Averaging</h3>
-                    <p className="text-gray-600 mb-4">
-                      Invest fixed amounts regularly regardless of market conditions to reduce timing risk and volatility impact.
-                    </p>
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-blue-900 mb-2">Benefits:</h4>
-                      <ul className="text-sm text-blue-800 space-y-1">
-                        <li>• Reduces market timing risk</li>
-                        <li>• Smooths out volatility</li>
-                        <li>• Disciplined approach</li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl bg-white">
+  <div className="p-8">
+    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+      <Calculator className="w-6 h-6 text-blue-600" />
+    </div>
+    <h3 className="text-xl font-bold mb-4">Dollar Cost Averaging</h3>
+    <p className="text-gray-600 mb-4">
+      Invest fixed amounts regularly regardless of market conditions to reduce timing risk and volatility impact.
+    </p>
+    <div className="bg-blue-50 p-4 rounded-lg">
+      <h4 className="font-semibold text-blue-900 mb-2">Benefits:</h4>
+      <ul className="text-sm text-blue-800 space-y-1">
+        <li>• Reduces market timing risk</li>
+        <li>• Smooths out volatility</li>
+        <li>• Disciplined approach</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <CardContent className="p-8">
-                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
-                      <Target className="w-6 h-6 text-green-600" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-4">Value Investing</h3>
-                    <p className="text-gray-600 mb-4">
-                      Identify undervalued securities trading below their intrinsic value for long-term appreciation.
-                    </p>
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-green-900 mb-2">Key Metrics:</h4>
-                      <ul className="text-sm text-green-800 space-y-1">
-                        <li>• Price-to-Earnings (P/E) ratio</li>
-                        <li>• Price-to-Book (P/B) ratio</li>
-                        <li>• Debt-to-Equity ratio</li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
+<div className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl bg-white">
+  <div className="p-8">
+    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+      <Target className="w-6 h-6 text-green-600" />
+    </div>
+    <h3 className="text-xl font-bold mb-4">Value Investing</h3>
+    <p className="text-gray-600 mb-4">
+      Identify undervalued securities trading below their intrinsic value for long-term appreciation.
+    </p>
+    <div className="bg-green-50 p-4 rounded-lg">
+      <h4 className="font-semibold text-green-900 mb-2">Key Metrics:</h4>
+      <ul className="text-sm text-green-800 space-y-1">
+        <li>• Price-to-Earnings (P/E) ratio</li>
+        <li>• Price-to-Book (P/B) ratio</li>
+        <li>• Debt-to-Equity ratio</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-                <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <CardContent className="p-8">
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
-                      <TrendingUp className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-4">Growth Investing</h3>
-                    <p className="text-gray-600 mb-4">
-                      Focus on companies with above-average growth potential, often in emerging industries or technologies.
-                    </p>
-                    <div className="bg-purple-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-purple-900 mb-2">Indicators:</h4>
-                      <ul className="text-sm text-purple-800 space-y-1">
-                        <li>• Revenue growth rate</li>
-                        <li>• Market expansion</li>
-                        <li>• Innovation pipeline</li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
+<div className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl bg-white">
+  <div className="p-8">
+    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+      <TrendingUp className="w-6 h-6 text-purple-600" />
+    </div>
+    <h3 className="text-xl font-bold mb-4">Growth Investing</h3>
+    <p className="text-gray-600 mb-4">
+      Focus on companies with above-average growth potential, often in emerging industries or technologies.
+    </p>
+    <div className="bg-purple-50 p-4 rounded-lg">
+      <h4 className="font-semibold text-purple-900 mb-2">Indicators:</h4>
+      <ul className="text-sm text-purple-800 space-y-1">
+        <li>• Revenue growth rate</li>
+        <li>• Market expansion</li>
+        <li>• Innovation pipeline</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
               </div>
             </section>
 
